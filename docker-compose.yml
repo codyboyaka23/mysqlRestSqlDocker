@@ -1,0 +1,79 @@
+version: "3.7"
+
+services:
+
+  mysql-server-service:
+    image: 127.0.0.1:5000/mysql-server-image
+    container_name: mysql-server-container
+    build: 
+      context: .
+      dockerfile: ./docker/mysql-server/Dockerfile
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpwd
+      MYSQL_ROOT_HOST: "%" 
+      MYSQL_DATABASE: mysql_rest_sql_docker
+    ports:
+      - "33666:3306"
+    command: ["mysqld","--bind-address=0.0.0.0", "--sql-mode=STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO", "--skip-name-resolve","--default_authentication_plugin=mysql_native_password",]
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  mysql-client-service:
+    image: 127.0.0.1:5000/mysql-client-image
+    container_name: mysql-client-container
+    build: 
+      context: .
+      dockerfile: ./docker/mysql-client/Dockerfile
+    volumes:
+      - ./docker/mysql-client/sql_files:/opt/sql_files
+    depends_on:
+      mysql-server-service:
+        condition: service_healthy
+    command:
+      - /bin/sh
+      - -c
+      - |
+        mysql -u root -prootpwd -h mysql-server-service --port 3306 mysql_rest_sql_docker < /opt/sql_files/grants.sql
+        mysql -u root -prootpwd -h mysql-server-service --port 3306 mysql_rest_sql_docker < /opt/sql_files/dump.sql
+
+  restsql-service:
+    image: 127.0.0.1:5000/mysql-restsql-image
+    container_name: restsql-container
+    build: 
+      context: .
+      dockerfile: ./docker/restsql/Dockerfile
+      args:
+        SQL_RESOURCES_DIR: "/etc/opt/restsql/sqlresources"
+        SHARED_USER: riccardo
+        SHARED_GROUP: riccardo
+        SHARED_UID: 1000
+        SHARED_GID: 1000   
+    ports:
+      - 8081:8080
+    volumes:
+      - ./docker/restsql/restsql-conf:/etc/opt/restsql
+      - ./docker/restsql/logs:/var/log/restsql
+      - ./docker/restsql/security:/etc/opt/restsql-security
+      - ./docker/restsql/tomcat/conf/tomcat-users.xml:/usr/local/tomcat/conf/tomcat-users.xml
+      - ./docker/restsql/tomcat/webapps/restsql/WEB-INF/web.xml:/etc/opt/restSqlWeb.xml
+      - ./docker/restsql/set-webapp-security.sh:/etc/opt/setsec
+    depends_on:
+      - mysql-client-service
+
+  phpmyadmin-service:
+    image: 127.0.0.1:5000/phpmyadmin-service-image
+    container_name: phpmyadmin-container
+    build: 
+      context: .
+      dockerfile: ./docker/phpmyadmin/Dockerfile
+    depends_on:
+      - mysql-client-service
+    ports:
+      - 8877:80
+    environment:
+      MYSQL_USERNAME: root
+      MYSQL_ROOT_PASSWORD: rootpwd
+      PMA_HOST: mysql-server-service
+      PMA_ARBITRARY: 1

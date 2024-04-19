@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='utf-8'?>
+<tomcat-users>
+    <role rolename="manager-gui" />
+    <role rolename="admin-gui" />
+    <role rolename="admin-script" />
+    <role rolename="all"/>
+    <role rolename="limited"/>
+    <role rolename="readonly"/>
+    <role rolename="admin"/>
+    <user username="all" password="all" roles="all"/>
+    <user username="limited" password="limited" roles="limited"/>
+    <user username="readonly" password="readonly" roles="readonly"/>
+    <user username="admin" password="admin" roles="admin"/>
+    <user username="riccardo" password="cara55I0" roles="all,manager-gui,admin-gui,admin-script,admin"/>
+</tomcat-users>
