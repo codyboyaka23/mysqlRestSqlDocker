@@ -11,5 +11,5 @@
     <user username="limited" password="limited" roles="limited"/>
     <user username="readonly" password="readonly" roles="readonly"/>
     <user username="admin" password="admin" roles="admin"/>
-    <user username="riccardo" password="cara55I0" roles="all,manager-gui,admin-gui,admin-script,admin"/>
+    <user username="cody" password="codypwd" roles="all,manager-gui,admin-gui,admin-script,admin"/>
 </tomcat-users>

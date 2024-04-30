@@ -3,8 +3,8 @@ version: "3.7"
 services:
 
   mysql-server-service:
-    image: 127.0.0.1:5000/mysql-server-image
-    container_name: mysql-server-container
+    image: 127.0.0.1:5000/mysql-restsql-mysql-server-image
+    container_name: mysql-restsql-mysql-server-container
     build: 
       context: .
       dockerfile: ./docker/mysql-server/Dockerfile
@@ -21,8 +21,8 @@ services:
       retries: 10
 
   mysql-client-service:
-    image: 127.0.0.1:5000/mysql-client-image
-    container_name: mysql-client-container
+    image: 127.0.0.1:5000/mysql-restsql-mysql-client-image
+    container_name: mysql-restsql-mysql-client-container
     build: 
       context: .
       dockerfile: ./docker/mysql-client/Dockerfile
@@ -39,8 +39,8 @@ services:
         mysql -u root -prootpwd -h mysql-server-service --port 3306 mysql_rest_sql_docker < /opt/sql_files/dump.sql
 
   restsql-service:
-    image: 127.0.0.1:5000/mysql-restsql-image
-    container_name: restsql-container
+    image: 127.0.0.1:5000/mysql-restsql-restsql-image
+    container_name: mysql-restsql-restsql-container
     build: 
       context: .
       dockerfile: ./docker/restsql/Dockerfile
@@ -63,8 +63,8 @@ services:
       - mysql-client-service
 
   phpmyadmin-service:
-    image: 127.0.0.1:5000/phpmyadmin-service-image
-    container_name: phpmyadmin-container
+    image: 127.0.0.1:5000/mysql-restsq-phpmyadmin-service-image
+    container_name: mysql-restsq-phpmyadmin-container
     build: 
       context: .
       dockerfile: ./docker/phpmyadmin/Dockerfile
