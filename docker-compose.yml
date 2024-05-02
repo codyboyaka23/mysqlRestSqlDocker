@@ -49,7 +49,8 @@ services:
         SHARED_USER: riccardo
         SHARED_GROUP: riccardo
         SHARED_UID: 1000
-        SHARED_GID: 1000   
+        SHARED_GID: 1000
+        SHARED_USER_PWD: riccardopwd
     ports:
       - 8881:8080
     volumes:
