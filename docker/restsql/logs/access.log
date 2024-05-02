@@ -1,3 +1,0 @@
-172.22.0.1 2024-04-30 15:31:59,976 GET /restsql/res/stratos.ordini?_output=application/json&_limit=10&_offset=0 403 3ms
-172.22.0.1 2024-04-30 15:33:36,130 GET /restsql/res/stratos.prodotti?_output=application/json&_limit=10&_offset=0 200 62ms
-172.22.0.1 2024-04-30 15:33:40,227 GET /restsql/res/stratos.aziende?_limit=10&_offset=0 200 30ms
