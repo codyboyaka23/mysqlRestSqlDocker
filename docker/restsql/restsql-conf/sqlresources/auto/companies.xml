@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:sqlResource xmlns:ns2="http://restsql.org/schema">
+    <query>
+		SELECT code, created_at, description, id, name, updated_at
+		FROM companies
+	</query>
+    <metadata>
+        <database default="mysql_rest_sql_docker"/>
+        <table name="companies" role="Parent"/>
+    </metadata>
+</ns2:sqlResource>

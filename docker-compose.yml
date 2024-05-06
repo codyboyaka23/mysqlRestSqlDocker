@@ -14,6 +14,10 @@ services:
       MYSQL_DATABASE: mysql_rest_sql_docker
     ports:
       - "33666:3306"
+    volumes:
+      - mysql-server-volume:/var/lib/mysql
+    networks:
+      - mysql_rest_sql-network
     command: ["mysqld","--bind-address=0.0.0.0", "--sql-mode=STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO", "--skip-name-resolve","--default_authentication_plugin=mysql_native_password",]
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
@@ -28,6 +32,8 @@ services:
       dockerfile: ./docker/mysql-client/Dockerfile
     volumes:
       - ./docker/mysql-client/sql_files:/opt/sql_files
+    networks:
+      - mysql_rest_sql-network
     depends_on:
       mysql-server-service:
         condition: service_healthy
@@ -54,12 +60,14 @@ services:
     ports:
       - 8881:8080
     volumes:
-      - ./docker/restsql/restsql-conf:/etc/opt/restsql
+      - rest_sql-volume:/etc/opt/restsql
       - ./docker/restsql/logs:/var/log/restsql
       - ./docker/restsql/security:/etc/opt/restsql-security
       - ./docker/restsql/tomcat/conf/tomcat-users.xml:/usr/local/tomcat/conf/tomcat-users.xml
       - ./docker/restsql/tomcat/webapps/restsql/WEB-INF/web.xml:/etc/opt/restSqlWeb.xml
       - ./docker/restsql/set-webapp-security.sh:/etc/opt/setsec
+    networks:
+      - mysql_rest_sql-network
     depends_on:
       - mysql-client-service
 
@@ -69,6 +77,8 @@ services:
     build: 
       context: .
       dockerfile: ./docker/phpmyadmin/Dockerfile
+    networks:
+      - mysql_rest_sql-network
     depends_on:
       - mysql-client-service
     ports:
@@ -78,3 +88,24 @@ services:
       MYSQL_ROOT_PASSWORD: rootpwd
       PMA_HOST: mysql-server-service
       PMA_ARBITRARY: 1
+
+networks:
+
+  mysql_rest_sql-network:
+    driver: bridge
+
+volumes:
+
+  mysql-server-volume:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "./docker/mysql-server/.data"
+  
+  rest_sql-volume:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "./docker/restsql/restsql-conf"
