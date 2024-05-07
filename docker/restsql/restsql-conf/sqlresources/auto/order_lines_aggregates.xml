@@ -17,7 +17,7 @@
 	</query>
     <metadata>
         <database default="mysql_rest_sql_docker"/>
-        <table name="orders_lines" role="Parent" rowSetAlias="orderLines"/>
+        <table name="orders_lines" role="Parent" rowSetAlias="orderLinesAggregates"/>
         <table name="orders" role="ParentExtension"/>
         <table name="companies" role="ParentExtension"/>
         <table name="products" role="ParentExtension"/>

@@ -12,9 +12,3 @@ SHARED_GROUP: riccardo
 SHARED_UID: 1000
 SHARED_GID: 1000
 ```
-## Deploy
-```bash
-docker compose up -d
-docker exec -ti mysql-restsql-restsql-container sh /etc/opt/setsec
-docker compose restart restsql-service
-```
