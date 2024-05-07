@@ -4,7 +4,6 @@ services:
 
   mysql-server-service:
     image: 127.0.0.1:5000/mysql-restsql-mysql-server-image
-    container_name: mysql-restsql-mysql-server-container
     build: 
       context: .
       dockerfile: ./docker/mysql-server/Dockerfile
@@ -25,11 +24,7 @@ services:
       retries: 10
 
   mysql-client-service:
-    image: 127.0.0.1:5000/mysql-restsql-mysql-client-image
-    container_name: mysql-restsql-mysql-client-container
-    build: 
-      context: .
-      dockerfile: ./docker/mysql-client/Dockerfile
+    image: mysql:8.0
     volumes:
       - ./docker/mysql-client/sql_files:/opt/sql_files
       - ./docker/mysql-client/entrypoint.sh:/opt/entrypoint
@@ -43,7 +38,7 @@ services:
 
   restsql-service:
     image: 127.0.0.1:5000/mysql-restsql-restsql-image
-    container_name: mysql-restsql-restsql-container
+    container_name: restsql-container
     build: 
       context: .
       dockerfile: ./docker/restsql/Dockerfile
@@ -78,7 +73,6 @@ services:
     privileged: true
     volumes:
       - ./:/etc/opt
-      - ./docker/dind/entrypoint.sh:/etc/opt/entrypoint
       - /var/run/docker.sock:/var/run/docker.sock  
     working_dir: /etc/opt
     networks:
@@ -86,13 +80,12 @@ services:
     depends_on:
       restsql-service:
         condition: service_healthy
-    entrypoint: ["/bin/sh", "/etc/opt/entrypoint"]
-    # command:
-    #   - /bin/sh
-    #   - -c
-    #   - |
-    #     docker exec mysql-restsql-restsql-container sh /etc/opt/setsec
-    #     docker restart mysql-restsql-restsql-container
+    command:
+      - /bin/sh
+      - -c
+      - |
+        docker exec restsql-container sh /etc/opt/setsec
+        docker restart restsql-container
 
   phpmyadmin-service:
     image: 127.0.0.1:5000/mysql-restsq-phpmyadmin-service-image
