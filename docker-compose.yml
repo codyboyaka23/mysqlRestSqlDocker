@@ -32,17 +32,14 @@ services:
       dockerfile: ./docker/mysql-client/Dockerfile
     volumes:
       - ./docker/mysql-client/sql_files:/opt/sql_files
+      - ./docker/mysql-client/entrypoint.sh:/opt/entrypoint
+      - ./docker/mysql-client/.env:/opt/.env
     networks:
       - mysql_rest_sql-network
     depends_on:
       mysql-server-service:
         condition: service_healthy
-    command:
-      - /bin/sh
-      - -c
-      - |
-        mysql -u root -prootpwd -h mysql-server-service --port 3306 mysql_rest_sql_docker < /opt/sql_files/grants.sql
-        mysql -u root -prootpwd -h mysql-server-service --port 3306 mysql_rest_sql_docker < /opt/sql_files/dump.sql
+    entrypoint: ["/bin/sh", "/opt/entrypoint"]
 
   restsql-service:
     image: 127.0.0.1:5000/mysql-restsql-restsql-image
@@ -70,6 +67,32 @@ services:
       - mysql_rest_sql-network
     depends_on:
       - mysql-client-service
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:8080"] 
+      interval: 30s
+      timeout: 10s 
+      retries: 3     
+
+  restsql-service-configurator:
+    image: docker:dind
+    privileged: true
+    volumes:
+      - ./:/etc/opt
+      - ./docker/dind/entrypoint.sh:/etc/opt/entrypoint
+      - /var/run/docker.sock:/var/run/docker.sock  
+    working_dir: /etc/opt
+    networks:
+      - mysql_rest_sql-network
+    depends_on:
+      restsql-service:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "/etc/opt/entrypoint"]
+    # command:
+    #   - /bin/sh
+    #   - -c
+    #   - |
+    #     docker exec mysql-restsql-restsql-container sh /etc/opt/setsec
+    #     docker restart mysql-restsql-restsql-container
 
   phpmyadmin-service:
     image: 127.0.0.1:5000/mysql-restsq-phpmyadmin-service-image
@@ -101,8 +124,8 @@ volumes:
     driver_opts:
       type: "none"
       o: "bind"
-      device: "./docker/mysql-server/.data"
-  
+      device: "./docker/mysql-server/.data" 
+
   rest_sql-volume:
     driver: local
     driver_opts:
