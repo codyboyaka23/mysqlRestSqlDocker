@@ -7,9 +7,7 @@
     <role rolename="limited"/>
     <role rolename="readonly"/>
     <role rolename="admin"/>
-    <user username="all" password="all" roles="all"/>
     <user username="limited" password="limited" roles="limited"/>
     <user username="readonly" password="readonly" roles="readonly"/>
-    <user username="admin" password="admin" roles="admin"/>
     <user username="cody" password="codypwd" roles="all,manager-gui,admin-gui,admin-script,admin"/>
 </tomcat-users>
