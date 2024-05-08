@@ -13,7 +13,7 @@
         measure_unit.code AS measureUnit, 
         products.price
         FROM orders 
-        JOIN companies ON companies.id = orders.company_id 
+        LEFT OUTER JOIN companies ON companies.id = orders.company_id 
         JOIN orders_lines ON orders_lines.order_id = orders.id
         JOIN products ON products.id = orders_lines.id
         JOIN measure_unit ON measure_unit.id = products.measure_unit
@@ -23,7 +23,7 @@
         <table name="orders" role="Parent" rowSetAlias="orders"/>
         <table name="companies" role="ParentExtension"/>
         <table name="orders_lines" role="Child" rowSetAlias="lines"/>
-        <table name="products" role="ChildExtension" rowSetAlias="products"/>
+        <table name="products" role="ChildExtension"/>
         <table name="measure_unit" role="ChildExtension"/>
     </metadata>
 </ns2:sqlResource>
