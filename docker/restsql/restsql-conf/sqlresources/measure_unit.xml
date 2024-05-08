@@ -6,6 +6,6 @@
 	</query>
     <metadata>
         <database default="mysql_rest_sql_docker"/>
-        <table name="measure_unit" role="Parent"/>
+        <table name="measure_unit" role="Parent" rowSetAlias="measureUnits"/>
     </metadata>
 </ns2:sqlResource>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:sqlResource xmlns:ns2="http://restsql.org/schema">
+    <query>
+		SELECT orders.active AS orderStatus, 
+        orders.id AS ID, 
+        orders.created_at AS createdAt, 
+        orders.updated_at AS updatedAt,
+        companies.name AS company, 
+        companies.code AS companyCode, 
+        orders_lines.id AS ID, 
+        products.name AS product, 
+        orders_lines.qty , 
+        measure_unit.code AS measureUnit, 
+        products.price,
+        (orders_lines.qty * products.price) AS lineTotal
+        FROM orders 
+        LEFT JOIN companies ON companies.id = orders.company_id 
+        LEFT JOIN orders_lines ON orders_lines.order_id = orders.id
+        LEFT JOIN products ON products.id = orders_lines.id
+        LEFT JOIN measure_unit ON measure_unit.id = products.measure_unit
+	</query>
+    <metadata>
+        <database default="mysql_rest_sql_docker" />
+        <table name="orders" role="Parent" rowAlias="order" rowSetAlias="orders" />
+        <table name="companies" role="ParentExtension" />
+        <table name="orders_lines" role="Child" rowAlias="line" rowSetAlias="lines" />
+        <table name="products" role="ChildExtension" />
+        <table name="measure_unit" role="ChildExtension" />
+    </metadata>
+    <renderers>
+        <json>
+            <element name="orders">
+                <element name="lines">
+                    <element name="total" select="line.lineTotal"/>
+                </element>
+            </element>
+        </json>
+    </renderers>
+</ns2:sqlResource>

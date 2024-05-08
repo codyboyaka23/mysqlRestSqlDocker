@@ -4,6 +4,6 @@
 		SELECT created_at, description, id, measure_unit, mpn, name, price, updated_at FROM products</query>
     <metadata>
         <database default="mysql_rest_sql_docker"/>
-        <table name="products" role="Parent"/>
+        <table name="products" role="Parent" rowSetAlias="products"/>
     </metadata>
 </ns2:sqlResource>

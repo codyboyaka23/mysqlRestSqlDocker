@@ -11,6 +11,6 @@
     <metadata>
         <database default="mysql_rest_sql_docker"/>
         <table name="products" role="Parent" rowSetAlias="productsAggregates"/>
-        <table name="measure_unit" role="ParentExtension"/>
+        <table name="measure_unit" role="Join"/>
     </metadata>
 </ns2:sqlResource>
