@@ -25,7 +25,7 @@ DROP TABLE IF EXISTS `companies`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `companies` (
-  `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `code` varchar(10) NOT NULL,
   `name` varchar(50) NOT NULL,
   `description` varchar(100) NOT NULL,
@@ -59,7 +59,11 @@ CREATE TABLE `orders_lines` (
   `qty` int(10) unsigned NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `fk_line_product` (`product_id`),
+  CONSTRAINT `fk_line_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
+  KEY `fk_line_order` (`order_id`),
+  CONSTRAINT `fk_line_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -95,7 +99,11 @@ CREATE TABLE `orders` (
   `active` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `fk_order_customer` (`customer_id`),
+  CONSTRAINT `fk_order_customer` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`),
+  KEY `fk_order_company` (`company_id`),
+  CONSTRAINT `fk_order_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -116,6 +124,66 @@ UNLOCK TABLES;
 
 
 --
+-- Table structure for table `customer_care_activities`
+--
+
+DROP TABLE IF EXISTS `customer_care_activities`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `customer_care_activities` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(10) NOT NULL,
+  `description` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_customer_care_activities_code` (`code`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Dumping data for table `customer_care_activities`
+--
+
+LOCK TABLES `customer_care_activities` WRITE;
+/*!40000 ALTER TABLE `customer_care_activities` DISABLE KEYS */;
+INSERT INTO `customer_care_activities` VALUES 
+(1,'LEAD','first contact'),
+(2,'HELPDESK','60 minutes helpdesk'),
+(3,'ADVICE','alerting client');
+/*!40000 ALTER TABLE `customer_care_activities` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+--
+-- Table structure for table `rel_customer_care_activities_orders_lines`
+--
+
+DROP TABLE IF EXISTS `rel_customer_care_activities_orders_lines`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `rel_customer_care_activities_orders_lines` (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `customer_care_activity_id` int(10) UNSIGNED NOT NULL,
+  `order_line_id` int(10) UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_rel_activities_orders_lines` (`customer_care_activity_id`),
+  KEY `fk_rel_orders_lines_activities` (`order_line_id`),
+  CONSTRAINT `fk_rel_activities_orders_lines` FOREIGN KEY (`customer_care_activity_id`) REFERENCES `customer_care_activities` (`id`),
+  CONSTRAINT `fk_rel_orders_lines_activities` FOREIGN KEY (`order_line_id`) REFERENCES `orders_lines` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Dumping data for table `rel_customer_care_activities_orders_lines`
+--
+
+/*!40000 ALTER TABLE `rel_customer_care_activities_orders_lines` DISABLE KEYS */;
+INSERT INTO `rel_customer_care_activities_orders_lines` VALUES (1,1,2),(2,1,1);
+/*!40000 ALTER TABLE `rel_customer_care_activities_orders_lines` ENABLE KEYS */;
+
+
+--
 -- Table structure for table `products`
 --
 
@@ -125,14 +193,16 @@ DROP TABLE IF EXISTS `products`;
 CREATE TABLE `products` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `mpn` varchar(50) NOT NULL,
-  `measure_unit` tinyint(3) unsigned NOT NULL,
+  `measure_unit_id` tinyint(3) unsigned NOT NULL,
   `name` varchar(50) NOT NULL,
   `description` varchar(100) DEFAULT NULL,
   `price` DECIMAL(11,2) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
-  UNIQUE KEY `idx_unique_mpn_products` (`mpn`)
+  UNIQUE KEY `idx_unique_mpn_products` (`mpn`),
+  KEY `fk_product_measure_unit` (`measure_unit_id`),
+  CONSTRAINT `fk_product_measure_unit` FOREIGN KEY (`measure_unit_id`) REFERENCES `measure_units` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -152,13 +222,13 @@ INSERT INTO `products` VALUES
 UNLOCK TABLES;
 
 --
--- Table structure for table `measure_unit`
+-- Table structure for table `measure_units`
 --
 
-DROP TABLE IF EXISTS `measure_unit`;
+DROP TABLE IF EXISTS `measure_units`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `measure_unit` (
+CREATE TABLE `measure_units` (
   `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
   `code` varchar(10) NOT NULL,
   `description` varchar(100) NOT NULL,
@@ -168,16 +238,16 @@ CREATE TABLE `measure_unit` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `measure_unit`
+-- Dumping data for table `measure_units`
 --
 
-LOCK TABLES `measure_unit` WRITE;
-/*!40000 ALTER TABLE `measure_unit` DISABLE KEYS */;
-INSERT INTO `measure_unit` VALUES 
+LOCK TABLES `measure_units` WRITE;
+/*!40000 ALTER TABLE `measure_units` DISABLE KEYS */;
+INSERT INTO `measure_units` VALUES 
 (1,'PIECE','one unit'),
 (2,'HOUR','60 minutes'),
 (3,'BOX4','four unit box');
-/*!40000 ALTER TABLE `measure_unit` ENABLE KEYS */;
+/*!40000 ALTER TABLE `measure_units` ENABLE KEYS */;
 UNLOCK TABLES;
 
 

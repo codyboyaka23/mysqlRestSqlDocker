@@ -6,6 +6,6 @@
 	</query>
     <metadata>
         <database default="mysql_rest_sql_docker"/>
-        <table name="companies" role="Parent" rowSetAlias="companies"/>
+        <table name="companies" role="Parent"/>
     </metadata>
 </ns2:sqlResource>
