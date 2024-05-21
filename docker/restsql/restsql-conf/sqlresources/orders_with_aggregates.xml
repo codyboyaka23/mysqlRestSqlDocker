@@ -6,17 +6,20 @@
         orders.created_at AS createdAt, 
         orders.updated_at AS updatedAt,
         companies.name AS company, 
-        companies.code AS company_code, 
+        companies.code AS companyCode, 
         orders_lines.id AS ID, 
         products.name AS product, 
         orders_lines.qty , 
         measure_units.code AS measureUnit, 
-        products.price
+        products.price,
+        customer_care_activities.code AS cca_code
         FROM orders 
         LEFT OUTER JOIN companies ON companies.id = orders.company_id 
         JOIN orders_lines ON orders_lines.order_id = orders.id
         JOIN products ON products.id = orders_lines.id
         JOIN measure_units ON measure_units.id = products.measure_unit_id
+        LEFT JOIN rel_customer_care_activities_orders_lines AS rccao ON orders_lines.id = rccao.order_line_id
+        LEFT JOIN customer_care_activities ON rccao.customer_care_activity_id = customer_care_activities.id
 	</query>
     <metadata>
         <database default="mysql_rest_sql_docker"/>
@@ -25,5 +28,7 @@
         <table name="orders_lines" role="Child" rowSetAlias="lines"/>
         <table name="products" role="ChildExtension"/>
         <table name="measure_units" role="ChildExtension"/>
+        <table name="customer_care_activities" role="ChildExtension"/>
+        <table name="rel_customer_care_activities" role="Join"/>
     </metadata>
 </ns2:sqlResource>
