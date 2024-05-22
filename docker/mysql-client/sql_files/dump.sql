@@ -267,7 +267,7 @@ UNLOCK TABLES;
 
 
 
-CREATE VIEW orders_compressed_aggregates_2
+CREATE VIEW orders_compressed_aggregates
 AS
 SELECT orders.active AS orderStatus, 
 orders.id AS orderID, 
