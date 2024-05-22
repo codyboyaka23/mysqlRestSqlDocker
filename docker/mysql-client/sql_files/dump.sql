@@ -181,7 +181,7 @@ CREATE TABLE `rel_customer_care_activities_orders_lines` (
 --
 
 /*!40000 ALTER TABLE `rel_customer_care_activities_orders_lines` DISABLE KEYS */;
-INSERT INTO `rel_customer_care_activities_orders_lines` VALUES (1,1,2,CURRENT_TIMESTAMP),(2,1,1,CURRENT_TIMESTAMP);
+INSERT INTO `rel_customer_care_activities_orders_lines` VALUES (1,1,2,"2024-05-22 10:04:54"),(2,1,1,CURRENT_TIMESTAMP), (3,2,2,CURRENT_TIMESTAMP);
 /*!40000 ALTER TABLE `rel_customer_care_activities_orders_lines` ENABLE KEYS */;
 
 

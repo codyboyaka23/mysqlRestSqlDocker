@@ -12,7 +12,8 @@
             qty, 
             measureUnit, 
             price, 
-            cca_code
+            last_cca_code,
+            last_cca_date
 		FROM orders_compressed_aggregates
 	</query>
     <metadata>
