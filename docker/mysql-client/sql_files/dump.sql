@@ -280,7 +280,8 @@ products.name AS product,
 orders_lines.qty , 
 measure_units.code AS measureUnit, 
 products.price,
-customer_care_activities.code AS cca_code
+customer_care_activities.code AS last_cca_code ,
+rccao.created_at AS last_cca_date
 FROM orders 
 LEFT OUTER JOIN companies ON companies.id = orders.company_id 
 JOIN orders_lines ON orders_lines.order_id = orders.id
