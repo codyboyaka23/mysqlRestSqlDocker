@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:sqlResource xmlns:ns2="http://restsql.org/schema">
+    <query>
+		SELECT orderID, 
+            orderStatus, 
+            createdAt, 
+            updatedAt, 
+            company, 
+            companyCode, 
+            orderlineID, 
+            product, 
+            qty, 
+            measureUnit, 
+            price, 
+            cca_code
+		FROM orders_compressed_aggregates
+	</query>
+    <metadata>
+        <database default="mysql_rest_sql_docker"/>
+        <table name="orders_compressed_aggregates" role="Parent" rowSetAlias="orders"/>
+    </metadata>
+</ns2:sqlResource>

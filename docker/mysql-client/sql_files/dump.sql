@@ -29,11 +29,12 @@ CREATE TABLE `companies` (
   `code` varchar(10) NOT NULL,
   `name` varchar(50) NOT NULL,
   `description` varchar(100) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `created_at` TIMESTAMP NOT NULL DEFAULT current_timestamp(),
+  `updated_at` TIMESTAMP NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `deleted_at` TIMESTAMP DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_unique_code_companies` (`code`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -43,8 +44,8 @@ CREATE TABLE `companies` (
 LOCK TABLES `companies` WRITE;
 /*!40000 ALTER TABLE `companies` DISABLE KEYS */;
 INSERT INTO `companies` VALUES 
-(1,'PAD','DIGITS & Co.','best agency all around','2024-03-12 09:07:02','2024-03-26 12:38:19'),
-(2,'PAC','Pac-Man Ltd','we made best videogames','2024-03-12 09:07:02','2024-03-12 09:07:02');
+(1,'PAD','DIGITS & Co.','best agency all around','2024-03-12 09:07:02','2024-03-26 12:38:19',NULL),
+(2,'PAC','Pac-Man Ltd','we made best videogames','2024-03-12 09:07:02','2024-03-12 09:07:02',NULL);
 /*!40000 ALTER TABLE `companies` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -57,14 +58,14 @@ CREATE TABLE `orders_lines` (
   `order_id` int(10) unsigned NOT NULL,
   `product_id` int(10) unsigned NOT NULL,
   `qty` int(10) unsigned NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `created_at` TIMESTAMP NOT NULL DEFAULT current_timestamp(),
+  `updated_at` TIMESTAMP NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `fk_line_product` (`product_id`),
-  CONSTRAINT `fk_line_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
+  CONSTRAINT `fk_line_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   KEY `fk_line_order` (`order_id`),
-  CONSTRAINT `fk_line_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
+  CONSTRAINT `fk_line_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -97,14 +98,14 @@ CREATE TABLE `orders` (
   `customer_id` int(10) unsigned NOT NULL,
   `company_id` int(10) unsigned NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT 0,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `created_at` TIMESTAMP NOT NULL DEFAULT current_timestamp(),
+  `updated_at` TIMESTAMP NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `fk_order_customer` (`customer_id`),
-  CONSTRAINT `fk_order_customer` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`),
+  CONSTRAINT `fk_order_customer` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   KEY `fk_order_company` (`company_id`),
-  CONSTRAINT `fk_order_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4;
+  CONSTRAINT `fk_order_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -136,7 +137,7 @@ CREATE TABLE `customer_care_activities` (
   `description` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_customer_care_activities_code` (`code`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
@@ -165,12 +166,13 @@ CREATE TABLE `rel_customer_care_activities_orders_lines` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `customer_care_activity_id` int(10) UNSIGNED NOT NULL,
   `order_line_id` int(10) UNSIGNED NOT NULL,
+  `created_at` TIMESTAMP NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `fk_rel_activities_orders_lines` (`customer_care_activity_id`),
+  CONSTRAINT `fk_rel_activities_orders_lines` FOREIGN KEY (`customer_care_activity_id`) REFERENCES `customer_care_activities` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   KEY `fk_rel_orders_lines_activities` (`order_line_id`),
-  CONSTRAINT `fk_rel_activities_orders_lines` FOREIGN KEY (`customer_care_activity_id`) REFERENCES `customer_care_activities` (`id`),
-  CONSTRAINT `fk_rel_orders_lines_activities` FOREIGN KEY (`order_line_id`) REFERENCES `orders_lines` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  CONSTRAINT `fk_rel_orders_lines_activities` FOREIGN KEY (`order_line_id`) REFERENCES `orders_lines` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
@@ -179,7 +181,7 @@ CREATE TABLE `rel_customer_care_activities_orders_lines` (
 --
 
 /*!40000 ALTER TABLE `rel_customer_care_activities_orders_lines` DISABLE KEYS */;
-INSERT INTO `rel_customer_care_activities_orders_lines` VALUES (1,1,2),(2,1,1);
+INSERT INTO `rel_customer_care_activities_orders_lines` VALUES (1,1,2,CURRENT_TIMESTAMP),(2,1,1,CURRENT_TIMESTAMP);
 /*!40000 ALTER TABLE `rel_customer_care_activities_orders_lines` ENABLE KEYS */;
 
 
@@ -197,14 +199,17 @@ CREATE TABLE `products` (
   `name` varchar(50) NOT NULL,
   `description` varchar(100) DEFAULT NULL,
   `price` DECIMAL(11,2) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `created_at` TIMESTAMP NOT NULL DEFAULT current_timestamp(),
+  `updated_at` TIMESTAMP NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `deleted_at` TIMESTAMP DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_unique_mpn_products` (`mpn`),
   KEY `fk_product_measure_unit` (`measure_unit_id`),
-  CONSTRAINT `fk_product_measure_unit` FOREIGN KEY (`measure_unit_id`) REFERENCES `measure_units` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4;
+  CONSTRAINT `fk_product_measure_unit` FOREIGN KEY (`measure_unit_id`) REFERENCES `measure_units` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+CREATE INDEX idx_products_deleted_at ON products(deleted_at);
 
 --
 -- Dumping data for table `products`
@@ -213,11 +218,11 @@ CREATE TABLE `products` (
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
 INSERT INTO `products` VALUES 
-(1, 'mpn-099', 1 , 'monitor lcd', 'best monitor for you!', 100.50,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP ),
-(2, 'mpn-222', 2 , 'helpdesk', 'hourly sold help desk!', 25,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP ),
-(3, 'mpn-000', 1 , 'desktop pc', 'best personal compouter', 500,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP ),
-(4, 'mpn-001', 1 , 'portable pc', 'laptop workstation', 600,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP ),
-(5, 'mpn-431', 3 , 'printer cartridges', '4 cartridges for hp deskjet printer', 600,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP );
+(1, 'mpn-099', 1 , 'monitor lcd', 'best monitor for you!', 100.50,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,NULL ),
+(2, 'mpn-222', 2 , 'helpdesk', 'hourly sold help desk!', 25,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,NULL ),
+(3, 'mpn-000', 1 , 'desktop pc', 'best personal compouter', 500,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,NULL ),
+(4, 'mpn-001', 1 , 'portable pc', 'laptop workstation', 600,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,NULL ),
+(5, 'mpn-431', 3 , 'printer cartridges', '4 cartridges for hp deskjet printer', 600,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,NULL );
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -232,9 +237,10 @@ CREATE TABLE `measure_units` (
   `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
   `code` varchar(10) NOT NULL,
   `description` varchar(100) NOT NULL,
+  `deleted_at` TIMESTAMP DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_unique_measure_unit_code` (`code`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -244,9 +250,9 @@ CREATE TABLE `measure_units` (
 LOCK TABLES `measure_units` WRITE;
 /*!40000 ALTER TABLE `measure_units` DISABLE KEYS */;
 INSERT INTO `measure_units` VALUES 
-(1,'PIECE','one unit'),
-(2,'HOUR','60 minutes'),
-(3,'BOX4','four unit box');
+(1,'PIECE','one unit',NULL),
+(2,'HOUR','60 minutes',NULL),
+(3,'BOX4','four unit box',NULL);
 /*!40000 ALTER TABLE `measure_units` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -258,3 +264,28 @@ UNLOCK TABLES;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+
+
+CREATE VIEW orders_compressed_aggregates_2
+AS
+SELECT orders.active AS orderStatus, 
+orders.id AS orderID, 
+orders.created_at AS createdAt, 
+orders.updated_at AS updatedAt,
+companies.name AS company, 
+companies.code AS companyCode, 
+orders_lines.id AS orderlineID, 
+products.name AS product, 
+orders_lines.qty , 
+measure_units.code AS measureUnit, 
+products.price,
+customer_care_activities.code AS cca_code
+FROM orders 
+LEFT OUTER JOIN companies ON companies.id = orders.company_id 
+JOIN orders_lines ON orders_lines.order_id = orders.id
+JOIN products ON products.id = orders_lines.id
+JOIN measure_units ON measure_units.id = products.measure_unit_id
+LEFT JOIN rel_customer_care_activities_orders_lines AS rccao ON orders_lines.id = rccao.order_line_id
+LEFT JOIN customer_care_activities ON rccao.customer_care_activity_id = customer_care_activities.id
+GROUP BY orders_lines.id ORDER BY rccao.created_at DESC;
