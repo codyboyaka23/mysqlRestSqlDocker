@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns2:sqlResource xmlns:ns2="http://restsql.org/schema">
     <query>
-		SELECT customer_care_activity_id, id, order_line_id FROM rel_customer_care_activities_orders_lines</query>
+		SELECT customer_care_activity_id, id, order_line_id FROM customer_care_activities_history</query>
     <metadata>
         <database default="mysql_rest_sql_docker"/>
-        <table name="rel_customer_care_activities_orders_lines" role="Parent"/>
+        <table name="customer_care_activities_history" role="Parent"/>
     </metadata>
 </ns2:sqlResource>

@@ -18,7 +18,7 @@
         JOIN orders_lines ON orders_lines.order_id = orders.id
         JOIN products ON products.id = orders_lines.id
         JOIN measure_units ON measure_units.id = products.measure_unit_id
-        LEFT JOIN rel_customer_care_activities_orders_lines AS rccao ON orders_lines.id = rccao.order_line_id
+        LEFT JOIN customer_care_activities_history AS rccao ON orders_lines.id = rccao.order_line_id
         LEFT JOIN customer_care_activities ON rccao.customer_care_activity_id = customer_care_activities.id 
         GROUP BY orders_lines.id
 	</query>
