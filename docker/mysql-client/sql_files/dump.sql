@@ -301,6 +301,8 @@ UNLOCK TABLES;
 
 
 
+DROP VIEW orders_compressed_aggregates;
+
 CREATE VIEW orders_compressed_aggregates
 AS
 SELECT orders.active AS orderStatus, 
@@ -323,7 +325,7 @@ FROM orders
 LEFT OUTER JOIN companies ON companies.id = orders.company_id 
 JOIN customers ON customers.id = orders.customer_id
 JOIN orders_lines ON orders_lines.order_id = orders.id
-JOIN products ON products.id = orders_lines.id
+JOIN products ON products.id = orders_lines.product_id
 JOIN measure_units ON measure_units.id = products.measure_unit_id
 LEFT JOIN customer_care_activities_history AS rccao ON orders_lines.id = rccao.order_line_id
 LEFT JOIN customer_care_activities ON rccao.customer_care_activity_id = customer_care_activities.id

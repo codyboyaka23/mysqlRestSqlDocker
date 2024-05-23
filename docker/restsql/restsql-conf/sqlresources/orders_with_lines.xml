@@ -15,7 +15,7 @@
         FROM orders 
         LEFT OUTER JOIN companies ON companies.id = orders.company_id 
         JOIN orders_lines ON orders_lines.order_id = orders.id
-        JOIN products ON products.id = orders_lines.id
+        JOIN products ON products.id = orders_lines.product_id
         JOIN measure_units ON measure_units.id = products.measure_unit_id
 	</query>
     <metadata>
