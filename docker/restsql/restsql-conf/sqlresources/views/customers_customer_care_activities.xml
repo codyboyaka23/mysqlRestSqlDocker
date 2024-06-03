@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:sqlResource xmlns:ns2="http://restsql.org/schema">
+    <query>
+		SELECT 
+        name, 
+        email,
+        order_id, 
+        order_line_id,
+        product,
+        last_cca_code ,
+        last_cca_date
+		FROM customers_customer_care_activities_aggregates
+	</query>
+    <metadata>
+        <database default="mysql_rest_sql_docker"/>
+        <table name="customers_customer_care_activities_aggregates" role="Parent" rowSetAlias="customers_customer_care_activities_aggregates"/>
+    </metadata>
+</ns2:sqlResource>

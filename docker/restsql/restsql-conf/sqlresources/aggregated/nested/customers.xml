@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:sqlResource xmlns:ns2="http://restsql.org/schema">
+    <query>
+		SELECT
+        customers.name, 
+        customers.email,
+        orders.id AS order_id, 
+        orders_lines.id AS order_line_id,
+        products.name AS product,
+        customer_care_activities.code AS last_cca_code
+        FROM customers
+        JOIN orders ON orders.customer_id = customers.id
+        JOIN orders_lines ON orders_lines.order_id = orders.id
+        JOIN products ON products.id = orders_lines.product_id
+        LEFT JOIN customer_care_activities_history AS rccao ON orders_lines.id = rccao.order_line_id
+        LEFT JOIN customer_care_activities ON rccao.customer_care_activity_id = customer_care_activities.id
+        GROUP BY orders_lines.id
+	</query>
+    <metadata>
+        <database default="mysql_rest_sql_docker"/>
+        <table name="customers" role="Parent" rowSetAlias="customers"/>
+        <table name="orders" role="Child"/>
+        <table name="orders_lines" role="ChildExtension" rowSetAlias="lines"/>
+        <table name="products" role="ChildExtension"/>
+        <table name="customer_care_activities_history" role="ChildExtension"/>
+        <table name="customer_care_activities" role="ChildExtension"/>
+    </metadata>
+</ns2:sqlResource>

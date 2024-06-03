@@ -36,7 +36,7 @@
         <table name="products" role="ChildExtension"/>
         <table name="measure_units" role="ChildExtension"/>
         <table name="customer_care_activities" role="ChildExtension"/>
-        <table name="rel_customer_care_activities" role="ChildExtension"/>
+        <table name="customer_care_activities_history" role="ChildExtension"/>
         <!-- <table name="rel_customer_care_activities" role="Join"/> -->
     </metadata>
 </ns2:sqlResource>

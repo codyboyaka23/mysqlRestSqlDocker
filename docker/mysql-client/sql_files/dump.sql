@@ -330,3 +330,23 @@ JOIN measure_units ON measure_units.id = products.measure_unit_id
 LEFT JOIN customer_care_activities_history AS rccao ON orders_lines.id = rccao.order_line_id
 LEFT JOIN customer_care_activities ON rccao.customer_care_activity_id = customer_care_activities.id
 GROUP BY orders_lines.id ORDER BY rccao.created_at DESC;
+
+
+DROP VIEW `customers_customer_care_activities_aggregates`;
+
+
+CREATE VIEW `customers_customer_care_activities_aggregates` AS 
+SELECT
+customers.name, 
+customers.email,
+orders.id AS order_id, 
+orders_lines.id AS order_line_id,
+products.name AS product,
+customer_care_activities.code AS last_cca_code ,
+rccao.created_at AS last_cca_date
+FROM customers
+JOIN orders ON orders.customer_id = customers.id
+JOIN orders_lines ON orders_lines.order_id = orders.id
+JOIN products ON products.id = orders_lines.product_id
+LEFT JOIN customer_care_activities_history AS rccao ON orders_lines.id = rccao.order_line_id
+LEFT JOIN customer_care_activities ON rccao.customer_care_activity_id = customer_care_activities.id;
